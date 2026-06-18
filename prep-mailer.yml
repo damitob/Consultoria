@@ -1,0 +1,34 @@
+name: Consulting Prep — Weekly Email
+
+on:
+  schedule:
+    # Cada lunes a las 12:00 UTC = 09:00 Buenos Aires (UTC-3)
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+    # Permite ejecutarlo manualmente desde la interfaz de GitHub Actions
+    # Útil para probar el setup o recuperar un email perdido
+
+jobs:
+  send-weekly-email:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install anthropic
+
+      - name: Generate and send weekly email
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+          START_DATE: ${{ secrets.START_DATE }}
+        run: python scripts/send_prep.py
