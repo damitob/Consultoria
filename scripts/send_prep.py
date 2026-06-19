@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-from google import genai
-import smtplib, os, sys
+import requests, smtplib, os, sys
 from datetime import datetime, date
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -40,7 +39,8 @@ def get_current_week() -> int:
     return week
 
 def generate_email_html(week_num: int, week_data: dict) -> str:
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    api_key = os.environ["GEMINI_API_KEY"]
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
     temas_str = "\n".join(f"- {t}" for t in week_data["temas"])
     recursos_str = "\n".join(f"- {r}" for r in week_data["recursos"])
     prompt = f"""
@@ -67,23 +67,21 @@ INSTRUCCIONES:
 5. Cierre de 1-2 líneas, sin motivación vacía
 
 TONO: Directo, sin condescender. Como un ex-consultor que habla de igual a igual.
-Sin "¡Excelente!", "¡Vamos!", ni frases motivacionales. Tuteás (español rioplatense). Sé sustancioso.
+Sin exclamaciones ni frases motivacionales. Tuteás (español rioplatense). Sé sustancioso.
 
 FORMATO HTML COMPLETO:
 - max-width: 600px, centrado, fondo blanco (#ffffff)
 - Texto: #1a1a1a, font-family: Arial, sans-serif
 - Títulos de sección: con border-left 3px sólido #1e3a5f
 - Ejercicio: en un box con fondo #eef2f7, borde izquierdo #1e3a5f
-- Sin emojis excepto máximo 2-3 donde genuinamente aporten
 - HTML completo y renderizable en cliente de email
 
 Solo devolvé el HTML. Sin texto adicional antes ni después.
 """
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt
-    )
-    return response.text
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    response = requests.post(url, json=payload)
+    response.raise_for_status()
+    return response.json()["candidates"][0]["content"]["parts"][0]["text"]
 
 def send_email(html_content: str, week_num: int, week_title: str):
     gmail_user = os.environ["GMAIL_USER"]
