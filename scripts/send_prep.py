@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import requests, smtplib, os, sys
+import requests, smtplib, os, sys, time
 from datetime import datetime, date
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
