@@ -9,7 +9,7 @@ Generado con IA, adaptado a la semana del programa en que estás.
 
 - **Frecuencia:** Cada lunes a las 9am (Buenos Aires, UTC-3)
 - **Duración:** 10 semanas
-- **Tecnología:** GitHub Actions + Google Gemini API + Gmail SMTP
+- **Tecnología:** GitHub Actions + Groq API + Gmail SMTP
 - **Costo:** Gratis
 
 Cada email incluye: explicación en profundidad de los temas de la semana, ejercicio práctico con instrucciones claras, y recursos recomendados.
@@ -18,26 +18,27 @@ Cada email incluye: explicación en profundidad de los temas de la semana, ejerc
 
 ## Setup — hacés esto una sola vez
 
-### Paso 1 — Gemini API Key (gratis)
-1. Entrá a [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
-2. Click en **"Create API key"**
-3. Copiá la key
+### Paso 1 — Groq API Key (gratis)
+1. Entrá a [console.groq.com](https://console.groq.com)
+2. Creá una cuenta
+3. Ve a **API Keys → Create API key**
+4. Copiá la key
 
 ### Paso 2 — Gmail App Password
 1. Andá a [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-2. Nombre: `Consulting Prep` → click en **Crear**
-3. Copiá los 16 caracteres que te genera
+2. Escribí `Consulting Prep` → click en **Crear**
+3. Copiá los 16 caracteres que te genera — no los vas a ver de nuevo
 
 ### Paso 3 — Secrets en GitHub
 En tu repo: **Settings → Secrets and variables → Actions → New repository secret**
 
 | Secret | Valor |
 |--------|-------|
-| `GEMINI_API_KEY` | Tu API key de Google AI Studio |
+| `GROQ_API_KEY` | Tu API key de Groq |
 | `GMAIL_USER` | Tu Gmail completo (ej: tumail@gmail.com) |
 | `GMAIL_APP_PASSWORD` | Los 16 caracteres del paso anterior |
 | `RECIPIENT_EMAIL` | Donde querés recibir los emails |
-| `START_DATE` | Fecha de inicio en formato `YYYY-MM-DD` |
+| `START_DATE` | Fecha de inicio en formato `YYYY-MM-DD` (ej: `2026-06-18`) |
 
 ### Paso 4 — Probá que funciona
 1. En tu repo → **Actions → Consulting Prep — Weekly Email**
@@ -69,16 +70,16 @@ A partir de ahí llega solo cada lunes. No tenés que hacer nada más.
 ## Troubleshooting
 
 **Error de autenticación Gmail**
-→ Verificá que la verificación en 2 pasos está activa y que copiaste bien los 16 caracteres de la app password. No uses tu contraseña normal de Gmail.
+→ Verificá que la verificación en 2 pasos está activa y que copiaste bien los 16 caracteres. No uses tu contraseña normal de Gmail.
 
-**Error de Gemini API**
-→ Verificá que la key empieza con `AIza` y que la copiaste completa.
+**Error de Groq API**
+→ Verificá que la key está bien copiada y que tu cuenta de Groq está activa.
 
 **El workflow muestra verde pero no llega el email**
 → Revisá spam. Verificá que `RECIPIENT_EMAIL` está bien escrito.
 
 **Quiero recibir el email de una semana específica**
-→ Cambiá temporalmente `START_DATE` a la fecha que haría caer en esa semana y ejecutá manualmente.
+→ Cambiá temporalmente `START_DATE` a una fecha que haga caer en esa semana y ejecutá manualmente.
 
 ---
 
