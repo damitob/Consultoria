@@ -49,7 +49,9 @@ def generate_email_html(week_num: int, week_data: dict) -> str:
     prompt = f"""
 Sos un coach de preparación para entrevistas de consultoría estratégica (McKinsey, Bain, BCG).
 Estás escribiendo el email semanal para un candidato en la SEMANA {week_num} de 10.
-El candidato es un profesional argentino con experiencia laboral que quiere ingresar a una top consultora.
+El candidato es un profesional argentino con experiencia laboral que quiere ingresar a una top consultora estrategica.
+Recursos: solo videos de YouTube de máximo 20 minutos y links directos. Sin libros ni lecturas largas.
+
 
 ESTRUCTURA DE ESTA SEMANA:
 - Título: {week_data["titulo"]}
