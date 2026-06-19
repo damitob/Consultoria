@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import requests, smtplib, os, sys, time
+import requests, smtplib, os, sys
 from datetime import datetime, date
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -39,8 +39,11 @@ def get_current_week() -> int:
     return week
 
 def generate_email_html(week_num: int, week_data: dict) -> str:
-    api_key = os.environ["GEMINI_API_KEY"]
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {os.environ['GROQ_API_KEY']}",
+        "Content-Type": "application/json"
+    }
     temas_str = "\n".join(f"- {t}" for t in week_data["temas"])
     recursos_str = "\n".join(f"- {r}" for r in week_data["recursos"])
     prompt = f"""
@@ -78,16 +81,14 @@ FORMATO HTML COMPLETO:
 
 Solo devolvé el HTML. Sin texto adicional antes ni después.
 """
-    payload = {"contents": [{"parts": [{"text": prompt}]}]}
-    for intento in range(3):
-        response = requests.post(url, json=payload)
-        if response.status_code == 429:
-            print(f"Rate limit, esperando 60 segundos (intento {intento + 1}/3)...")
-            time.sleep(60)
-            continue
-        response.raise_for_status()
-        return response.json()["candidates"][0]["content"]["parts"][0]["text"]
-    response.raise_for_status() 
+    payload = {
+        "model": "llama-3.3-70b-versatile",
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 4000
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]["content"]
 
 def send_email(html_content: str, week_num: int, week_title: str):
     gmail_user = os.environ["GMAIL_USER"]
@@ -110,7 +111,7 @@ def send_email(html_content: str, week_num: int, week_title: str):
         sys.exit(1)
 
 def main():
-    required_vars = ["GEMINI_API_KEY", "GMAIL_USER", "GMAIL_APP_PASSWORD", "RECIPIENT_EMAIL", "START_DATE"]
+    required_vars = ["GROQ_API_KEY", "GMAIL_USER", "GMAIL_APP_PASSWORD", "RECIPIENT_EMAIL", "START_DATE"]
     missing = [v for v in required_vars if not os.environ.get(v)]
     if missing:
         print(f"ERROR: Faltan variables de entorno: {', '.join(missing)}")
