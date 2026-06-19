@@ -78,10 +78,16 @@ FORMATO HTML COMPLETO:
 
 Solo devolvé el HTML. Sin texto adicional antes ni después.
 """
-    payload = {"contents": [{"parts": [{"text": prompt}]}]}
-    response = requests.post(url, json=payload)
+payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    for intento in range(3):
+        response = requests.post(url, json=payload)
+        if response.status_code == 429:
+            print(f"Rate limit, esperando 60 segundos (intento {intento + 1}/3)...")
+            time.sleep(60)
+            continue
+        response.raise_for_status()
+        return response.json()["candidates"][0]["content"]["parts"][0]["text"]
     response.raise_for_status()
-    return response.json()["candidates"][0]["content"]["parts"][0]["text"]
 
 def send_email(html_content: str, week_num: int, week_title: str):
     gmail_user = os.environ["GMAIL_USER"]
