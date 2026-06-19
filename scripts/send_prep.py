@@ -78,7 +78,7 @@ FORMATO HTML COMPLETO:
 
 Solo devolvé el HTML. Sin texto adicional antes ni después.
 """
-payload = {"contents": [{"parts": [{"text": prompt}]}]}
+    payload = {"contents": [{"parts": [{"text": prompt}]}]}
     for intento in range(3):
         response = requests.post(url, json=payload)
         if response.status_code == 429:
@@ -87,7 +87,7 @@ payload = {"contents": [{"parts": [{"text": prompt}]}]}
             continue
         response.raise_for_status()
         return response.json()["candidates"][0]["content"]["parts"][0]["text"]
-    response.raise_for_status()
+    response.raise_for_status() 
 
 def send_email(html_content: str, week_num: int, week_title: str):
     gmail_user = os.environ["GMAIL_USER"]
